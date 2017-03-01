@@ -1,5 +1,6 @@
 package com.demo.twitter;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +16,6 @@ import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
-import twitter4j.conf.ConfigurationBuilder;
 
 @RestController
 public class GreetingController {
@@ -90,5 +90,109 @@ public class GreetingController {
     	return "Total followers having default Profiles"+defaultProfileImageCount+ "  out of total "+followerCount +" users";
     }
     
+    @RequestMapping("/likemytweet")
+    public String likeMyTweet(@RequestParam(value="userName", defaultValue="World") String userName) {
+    	
+    	
+    	long likeCount = 0;
+    	List<TwitterUser> userList = TwitterUtility.getUserList();
+    	for(int i=0;i<7;i++){
+    	
+    		TwitterUser user = TwitterUtility.getUserList().get(i);
+    		try{
+    			
+        		Twitter twitter = new TwitterFactory().getInstance();
+        		twitter.setOAuthConsumer(user.getConsumerKey(), user.getConsumerSecret());
+        		AccessToken oathAccessToken = new AccessToken(user.getAccessToken(),user.getAccessTokenSecret());
+        		twitter.setOAuthAccessToken(oathAccessToken);
+        		
+        		ResponseList<Status> statusList= twitter.getUserTimeline(userName);
+        		Status status = statusList.get(0);
+        		
+        		if(!status.isFavorited()){
+    				twitter.createFavorite(status.getId());
+    				likeCount++;
+        		}
+        	}catch(Exception e){
+        		System.out.println("Exception occured for user "+user.getName());
+        	}
+    	}
+    	
+    	
+    	//return "request "+userName;
+    	return "Total Likes : "+likeCount;   
+    }
     
+    /**
+     * 
+     * @param userName
+     * @return
+     */
+    @RequestMapping("/retweet")
+    public String retweet(@RequestParam(value="userName", defaultValue="World") String userName) {
+    	
+    	
+    	long likeCount = 0;
+    	List<TwitterUser> userList = TwitterUtility.getUserList();
+    	for(int i=0;i<userList.size();i++){
+    	
+    		TwitterUser user = TwitterUtility.getUserList().get(i);
+    		try{
+    			
+        		Twitter twitter = new TwitterFactory().getInstance();
+        		twitter.setOAuthConsumer(user.getConsumerKey(), user.getConsumerSecret());
+        		AccessToken oathAccessToken = new AccessToken(user.getAccessToken(),user.getAccessTokenSecret());
+        		twitter.setOAuthAccessToken(oathAccessToken);
+        		
+        		ResponseList<Status> statusList= twitter.getUserTimeline(userName);
+        		Status status = statusList.get(0);
+        		
+        		if(!status.isRetweeted()){
+    				twitter.retweetStatus(status.getId());
+    				likeCount++;
+        		}
+        	}catch(Exception e){
+        		System.out.println("Exception occured for user "+user.getName());
+        	}
+    	}
+    	
+    	
+    	//return "request "+userName;
+    	return "Total Likes : "+likeCount;   
+    }
+    
+    
+    /**
+     * 
+     * @param userName
+     * @return
+     */
+    @RequestMapping("/followme")
+    public String followme(@RequestParam(value="userName", defaultValue="World") String userName) {
+    	
+    	
+    	long followCount = 0;
+    	List<TwitterUser> userList = TwitterUtility.getUserList();
+    	for(int i=0;i<userList.size();i++){
+    	
+    		TwitterUser user = TwitterUtility.getUserList().get(i);
+    		try{
+    			
+        		Twitter twitter = new TwitterFactory().getInstance();
+        		twitter.setOAuthConsumer(user.getConsumerKey(), user.getConsumerSecret());
+        		AccessToken oathAccessToken = new AccessToken(user.getAccessToken(),user.getAccessTokenSecret());
+        		twitter.setOAuthAccessToken(oathAccessToken);
+        		
+        		twitter.createFriendship(userName);
+        		followCount++;
+        	}catch(Exception e){
+        		System.out.println("Exception occured for user "+user.getName());
+        		System.out.println("Message: "+e.getMessage());
+        	}
+    	}
+    	
+    	
+    	//return "request "+userName;
+    	return "Total New Follower : "+followCount;   
+    }
 }
