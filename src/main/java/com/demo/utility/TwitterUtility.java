@@ -3,9 +3,14 @@ package com.demo.utility;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.demo.twitter.TwitterUser;
+import com.demo.google.GoogleAPIHelper;
+import com.demo.entity.TwitterUser;
+import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.ValueRange;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -15,6 +20,63 @@ import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterUtility {
+	
+	private static Map<String, Twitter> userMap = new HashMap<String, Twitter>(); 
+	
+	private static List<TwitterUser> userList = new ArrayList<TwitterUser>();
+	
+	public static Map<String, Twitter> getUserMap() {
+		return userMap;
+	}
+
+	public static void setUserMap(Map<String, Twitter> userMap) {
+		TwitterUtility.userMap = userMap;
+	}
+
+
+	static{
+		//Manipulate Userlist
+    	try{
+	    	Sheets service = GoogleAPIHelper.getSheetsService();
+	    	String spreadsheetId = "1o8OhWQI1gRNHOLqNGzmQnZxw_B-7wxxVrvWt_a0EtC4";
+	    	String range = "set1!A2:I";
+	        ValueRange response = service.spreadsheets().values()
+	            .get(spreadsheetId, range)
+	            .execute();
+	        List<List<Object>> values = response.getValues();
+	        if (values == null || values.size() == 0) {
+	        	System.out.println("No Data Found o");
+	        } else {
+	        	System.out.println("User list found. Total Rows: "+values.size());
+	          for (List row : values) {
+	            // Print columns A and E, which correspond to indices 0 and 4.
+	        	 TwitterUser user = new TwitterUser(row.get(5).toString(),row.get(6).toString(),row.get(7).toString(),row.get(8).toString(),row.get(1).toString());
+	        	 userList.add(user);
+	          }
+	        }
+    	}catch(Exception e){
+    		System.out.println("Error while getting users: "+e.getMessage());
+    	}
+    	
+    	//Add users to usermap
+    	
+    	for(int i=0;i<userList.size();i++){
+        	
+    		TwitterUser user = TwitterUtility.getUserList().get(i);
+    		try{
+    			
+        		Twitter twitter = new TwitterFactory().getInstance();
+        		twitter.setOAuthConsumer(user.getConsumerKey(), user.getConsumerSecret());
+        		AccessToken oathAccessToken = new AccessToken(user.getAccessToken(),user.getAccessTokenSecret());
+        		twitter.setOAuthAccessToken(oathAccessToken);
+        		userMap.put(user.getName(), twitter);
+        		
+        	}catch(Exception e){
+        		System.out.println("Exception occured for user "+user.getName());
+        		System.out.println("Message: "+e.getMessage());
+        	}
+    	}
+	}
 	
 	public static AccessToken getAccessToken() throws Exception{
 	    // The factory instance is re-useable and thread safe.
@@ -56,16 +118,28 @@ public class TwitterUtility {
 	    return accessToken;
 	}
 	
-	
-	public static List<TwitterUser> getUserList(){
+	/**
+	 * Returns the master user
+	 * @return
+	 */
+	public static TwitterUser getUser(){
 		
-		List<TwitterUser> userList = new ArrayList<TwitterUser>();
+		TwitterUser user = null;
 		
 		//User1
-		userList.add(new TwitterUser("fWtcemk8nfS4HrYsz6GzVHgxX","S7t6pi9ojW1c5JwuW1NEXdk1xnyu42usFyHTaLwOvX1ovavVsR","1021626787-x8cxzFHoQE3JIQvw9s4J8qiG1LX7ZT00J1LiS6Q","6GOaFKjCFzltjBvL7KbtuTHLLr4aQy61BwVjx6N6sZfNr","Amit"));
+		user = new TwitterUser("weZUZReJhUyl2PNnwGg0RbvXG","O1sQ6RluyD1q6rnbsfwGh3koJuEAGKxiImU4JhPRFRvhQiSUqE","832195442985279488-gL8grkxyOITWgcbg1K5Iwwy3yoPZ2Pw","zx2JKwH2yUJCWQPF7mOC38G0ttC9LBbXZB4kd2qiazi6M","Rahul Raj");
 		
-		//User2
-		userList.add(new TwitterUser("weZUZReJhUyl2PNnwGg0RbvXG","O1sQ6RluyD1q6rnbsfwGh3koJuEAGKxiImU4JhPRFRvhQiSUqE","832195442985279488-gL8grkxyOITWgcbg1K5Iwwy3yoPZ2Pw","zx2JKwH2yUJCWQPF7mOC38G0ttC9LBbXZB4kd2qiazi6M","Rahul Raj"));
+		return user;
+		
+	}
+	
+	
+	/**
+	 * Returns the master user list
+	 * @return
+	 */
+	public static List<TwitterUser> getUserList(){
+		
 		return userList;
 		
 	}

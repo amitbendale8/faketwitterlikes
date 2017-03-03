@@ -1,4 +1,4 @@
-package com.demo.twitter;
+package com.demo.entity;
 
 public class TwitterUser {
 	private String consumerKey;
