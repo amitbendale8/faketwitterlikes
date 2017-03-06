@@ -53,33 +53,17 @@ public class GreetingController {
     
     @RequestMapping("/likemytweet")
     public String likeMyTweet(@RequestParam(value="userName", defaultValue="World") String userName) {
-      	List<TwitterUser> userList = TwitterUtility.getUserList();
-      	Map<String,Twitter> userMap = TwitterUtility.getUserMap();
-    	int noOfLikes = RandomnessUtility.getRandomNum(18, userList.size());
-    	int[] randomUsrArray = RandomnessUtility.getRandomNumberArray(noOfLikes, 0, userList.size());
-    	
-    	long likeCount = 0;
-    	
-    	for(int i=0;i<randomUsrArray.length;i++){
-    	
-    		TwitterUser user = TwitterUtility.getUserList().get(randomUsrArray[i]);
-    		try{
-    			
-        		Twitter twitter = userMap.get(user.getName());
-        		
-        		ResponseList<Status> statusList= twitter.getUserTimeline(userName);
-        		Status status = statusList.get(0);
-        		
-        		if(!status.isFavorited()){
-    				twitter.createFavorite(status.getId());
-    				likeCount++;
-        		}
-        	}catch(Exception e){
-        		System.out.println("Exception occured for user "+user.getName());
-        	}
+    	Twitter bhakSala = TwitterUtility.getUserMap().get("bhak_kala");
+    	int noOfLikes = 0;
+    	try{
+    		ResponseList<Status> statusList= bhakSala.getUserTimeline(userName);
+    		Status status = statusList.get(0);
+    		noOfLikes = TwitterUtility.likeTweet(status.getId());
+    		
+    	}catch(Exception e){
+    		System.out.println("Error while getting tweet");
     	}
-    	
-    	return "Total Likes : "+likeCount;   
+    	return "Total Number of Likes: "+noOfLikes;
     }
     
     /**
@@ -90,33 +74,17 @@ public class GreetingController {
     @RequestMapping("/retweet")
     public String retweet(@RequestParam(value="userName", defaultValue="World") String userName) {
     	
-      	List<TwitterUser> userList = TwitterUtility.getUserList();
-      	Map<String,Twitter> userMap = TwitterUtility.getUserMap();
-    	int noOfRetweets = RandomnessUtility.getRandomNum(18, userList.size());
-    	int[] randomUsrArray = RandomnessUtility.getRandomNumberArray(noOfRetweets, 0, userList.size());
-    	
-    	long retweetCount = 0;
-    	
-    	for(int i=0;i<randomUsrArray.length;i++){
-    	
-    		TwitterUser user = TwitterUtility.getUserList().get(randomUsrArray[i]);
-    		try{
-    			
-        		Twitter twitter = userMap.get(user.getName());
-        		
-        		ResponseList<Status> statusList= twitter.getUserTimeline(userName);
-        		Status status = statusList.get(0);
-        		
-        		if(!status.isRetweeted()){
-    				twitter.retweetStatus(status.getId());
-    				retweetCount++;
-        		}
-        	}catch(Exception e){
-        		System.out.println("Exception occured for user "+user.getName());
-        	}
+    	Twitter bhakSala = TwitterUtility.getUserMap().get("bhak_kala");
+    	int noOfRetweet = 0;
+    	try{
+    		ResponseList<Status> statusList= bhakSala.getUserTimeline(userName);
+    		Status status = statusList.get(0);
+    		noOfRetweet = TwitterUtility.retweet(status.getId());
+    		
+    	}catch(Exception e){
+    		System.out.println("Error while getting tweet");
     	}
-    	
-    	return "Retweets : "+retweetCount;   
+    	return "Total Retweets : "+noOfRetweet;   
     }
     
     
@@ -160,28 +128,7 @@ public class GreetingController {
     @RequestMapping("/likeBytweetId")
     public String likeBytweetId(@RequestParam(value="tweetID", defaultValue="World") String tweetID) {
     	
-    	List<TwitterUser> userList = TwitterUtility.getUserList();
-      	Map<String,Twitter> userMap = TwitterUtility.getUserMap();
-    	int noOfLikes = RandomnessUtility.getRandomNum(18, userList.size());
-    	int[] randomUsrArray = RandomnessUtility.getRandomNumberArray(noOfLikes, 0, userList.size());
-    	
-    	long likeCount = 0;
-    	
-    	for(int i=0;i<randomUsrArray.length;i++){
-    	
-    		TwitterUser user = TwitterUtility.getUserList().get(randomUsrArray[i]);
-    		try{
-        		Twitter twitter = userMap.get(user.getName());
-        		Status status = twitter.showStatus(Long.parseLong(tweetID));
-        		if(!status.isFavorited()){
-    				twitter.createFavorite(status.getId());
-    				likeCount++;
-        		}
-        	}catch(Exception e){
-        		System.out.println("Exception occured for user "+user.getName());
-        	}
-    	}
-    	
+    	int likeCount = TwitterUtility.likeTweet(Long.parseLong(tweetID));
     	return "Total Likes : "+likeCount;
     	
     }
@@ -194,29 +141,9 @@ public class GreetingController {
     @RequestMapping("/retweetBytweetId")
     public String retweetBytweetId(@RequestParam(value="tweetID", defaultValue="World") String tweetID) {
     	
-    	List<TwitterUser> userList = TwitterUtility.getUserList();
-      	Map<String,Twitter> userMap = TwitterUtility.getUserMap();
-    	int noOfLikes = RandomnessUtility.getRandomNum(18, userList.size());
-    	int[] randomUsrArray = RandomnessUtility.getRandomNumberArray(noOfLikes, 0, userList.size());
+    	int retweetCount = TwitterUtility.retweet(Long.parseLong(tweetID));
     	
-    	long retweetCount = 0;
-    	
-    	for(int i=0;i<randomUsrArray.length;i++){
-    	
-    		TwitterUser user = TwitterUtility.getUserList().get(randomUsrArray[i]);
-    		try{
-        		Twitter twitter = userMap.get(user.getName());
-        		Status status = twitter.showStatus(Long.parseLong(tweetID));
-        		if(!status.isRetweeted()){
-    				twitter.retweetStatus(status.getId());
-    				retweetCount++;
-        		}
-        	}catch(Exception e){
-        		System.out.println("Exception occured for user "+user.getName());
-        	}
-    	}
-    	
-    	return "Total Likes : "+retweetCount;
+    	return "Total retweets : "+retweetCount;
     	
     }
     
