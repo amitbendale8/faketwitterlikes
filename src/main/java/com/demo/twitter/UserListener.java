@@ -66,10 +66,11 @@ public class UserListener extends Thread{
                 System.out.println(username);
                 String profileLocation = user.getLocation();
                 System.out.println(profileLocation);
-                long tweetId = status.getId(); 
-                System.out.println(tweetId);
-                String content = status.getText();
-                System.out.println(content +"\n");
+                long tweetID = status.getId(); 
+                int likeCount = TwitterUtility.likeTweet(tweetID);
+                int retweetCount = TwitterUtility.retweet(tweetID);
+                System.out.println("Total Retweets: "+retweetCount);
+                System.out.println("Total likes: "+likeCount);
 
             }
 

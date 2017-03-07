@@ -7,12 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.demo.google.GoogleAPIHelper;
+import org.apache.log4j.Logger;
+
 import com.demo.entity.TwitterUser;
+import com.demo.google.GoogleAPIHelper;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
-import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -22,6 +23,8 @@ import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterUtility {
+	
+	static Logger log = Logger.getLogger(TwitterUtility.class.getName());
 	
 	private static Map<String, Twitter> userMap = new HashMap<String, Twitter>(); 
 	
@@ -74,51 +77,13 @@ public class TwitterUtility {
         		userMap.put(user.getName(), twitter);
         		
         	}catch(Exception e){
-        		System.out.println("Exception occured for user "+user.getName());
-        		System.out.println("Message: "+e.getMessage());
+        		log.debug("Exception Occured for User :"+user.getName());
+        		log.debug("Message: "+e.getMessage());
         	}
     	}
 	}
 	
-	public static AccessToken getAccessToken() throws Exception{
-	    // The factory instance is re-useable and thread safe.
-		ConfigurationBuilder cb = new ConfigurationBuilder();
-		cb.setDebugEnabled(true)
-		.setOAuthConsumerKey("fWtcemk8nfS4HrYsz6GzVHgxX")
-		.setOAuthConsumerSecret("S7t6pi9ojW1c5JwuW1NEXdk1xnyu42usFyHTaLwOvX1ovavVsR")
-		.setOAuthAccessToken(null)
-		.setOAuthAccessTokenSecret(null);
-    	TwitterFactory factory = new TwitterFactory(cb.build());
-     
-        Twitter twitter = factory.getInstance();
-	   
-	    RequestToken requestToken = twitter.getOAuthRequestToken();
-	  
-	    String verifier = requestToken.getParameter("oauth_verifier");
-	    AccessToken accessToken = null;
-	    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	   while (null == accessToken) {
-	      System.out.println("Open the following URL and grant access to your account:");
-	      System.out.println(requestToken.getAuthorizationURL());
-	      System.out.print("Enter the PIN(if aviailable) or just hit enter.[PIN]:");
-	      String pin = br.readLine();
-	      try{
-	         if(pin.length() > 0){
-	           accessToken = twitter.getOAuthAccessToken(requestToken, pin);
-	         
-	         }else{
-	           accessToken = twitter.getOAuthAccessToken(requestToken);
-	         }
-	      } catch (TwitterException te) {
-	        if(401 == te.getStatusCode()){
-	          System.out.println("Unable to get the access token.");
-	        }else{
-	          te.printStackTrace();
-	        }
-	      }
-	    }
-	    return accessToken;
-	}
+	
 	
 	/**
 	 * Returns the master user
@@ -166,6 +131,8 @@ public class TwitterUtility {
     		try{
     			
         		Twitter twitter = userMap.get(user.getName());
+        		int timeToPause = RandomnessUtility.getRandomNum(0, 10);
+        		Thread.sleep(timeToPause*1000);
         		
         		Status status = twitter.showStatus(tweetID);
         		if(!status.isFavorited()){
@@ -200,6 +167,9 @@ public class TwitterUtility {
     		try{
         		Twitter twitter = userMap.get(user.getName());
         		Status status = twitter.showStatus(tweetID);
+        		int timeToPause = RandomnessUtility.getRandomNum(0, 10);
+        		Thread.sleep(timeToPause*1000);
+        		
         		if(!status.isRetweeted()){
     				twitter.retweetStatus(status.getId());
     				retweetCount++;

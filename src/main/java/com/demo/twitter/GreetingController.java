@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +21,8 @@ import twitter4j.auth.AccessToken;
 
 @RestController
 public class GreetingController {
-
+	
+	static Logger log = Logger.getLogger(GreetingController.class.getName());
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
@@ -155,7 +157,7 @@ public class GreetingController {
     @RequestMapping("/displayUsers")
     public String displayUsers() {
     	
-    	TwitterUtility.getUserList();
+    	log.debug("logging the users");
     	return "wait";   
     }
     
