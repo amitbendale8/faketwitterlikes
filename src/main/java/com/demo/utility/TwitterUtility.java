@@ -41,7 +41,7 @@ public class TwitterUtility {
 
 	static{
 		//Manipulate Userlist
-    	try{
+    	/*try{
 	    	Sheets service = GoogleAPIHelper.getSheetsService();
 	    	String spreadsheetId = "1o8OhWQI1gRNHOLqNGzmQnZxw_B-7wxxVrvWt_a0EtC4";
 	    	String range = "set1!A2:I";
@@ -61,10 +61,11 @@ public class TwitterUtility {
 	        }
     	}catch(Exception e){
     		System.out.println("Error while getting users: "+e.getMessage());
-    	}
+    	}*/
+		
     	
     	//Add users to usermap
-    	
+		userList = CSVHelper.getUsers();
     	for(int i=0;i<userList.size();i++){
         	
     		TwitterUser user = TwitterUtility.getUserList().get(i);
@@ -143,6 +144,7 @@ public class TwitterUtility {
         		
         	}catch(Exception e){
         		System.out.println("Exception occured for user "+user.getName());
+        		System.out.println("Message "+e.getMessage());
         	}
     	}
     	

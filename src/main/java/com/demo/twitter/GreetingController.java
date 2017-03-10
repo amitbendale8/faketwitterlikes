@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.entity.TwitterUser;
+import com.demo.utility.CSVHelper;
 import com.demo.utility.RandomnessUtility;
 import com.demo.utility.TwitterUtility;
 
@@ -157,7 +158,7 @@ public class GreetingController {
     @RequestMapping("/displayUsers")
     public String displayUsers() {
     	
-    	log.debug("logging the users");
+    	CSVHelper.getUsers();
     	return "wait";   
     }
     
