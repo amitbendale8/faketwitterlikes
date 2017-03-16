@@ -29,11 +29,11 @@ public class StreamingController {
      * @param userName
      * @return
      */
-    @RequestMapping("/listen")
+    @RequestMapping("/twitter/listen")
     public String listen() {
     	//Start a thread
     	(new UserListener()).start();
-    	return "Thread Started";
+    	return "OK";
     	
     }
 }

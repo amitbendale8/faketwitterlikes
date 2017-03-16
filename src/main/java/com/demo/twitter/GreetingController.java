@@ -27,7 +27,7 @@ public class GreetingController {
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
-    @RequestMapping("/greeting")
+    @RequestMapping("/twitter/greeting")
     public String greeting(@RequestParam(value="name", defaultValue="World") String name) {
     	try{
     		TwitterUser user1 = TwitterUtility.getUser();
@@ -54,7 +54,7 @@ public class GreetingController {
     
     
     
-    @RequestMapping("/likemytweet")
+    @RequestMapping("/twitter/likemytweet")
     public String likeMyTweet(@RequestParam(value="userName", defaultValue="World") String userName) {
     	Twitter bhakSala = TwitterUtility.getUserMap().get("bhak_kala");
     	int noOfLikes = 0;
@@ -74,7 +74,7 @@ public class GreetingController {
      * @param userName
      * @return
      */
-    @RequestMapping("/retweet")
+    @RequestMapping("/twitter/retweet")
     public String retweet(@RequestParam(value="userName", defaultValue="World") String userName) {
     	
     	Twitter bhakSala = TwitterUtility.getUserMap().get("bhak_kala");
@@ -96,7 +96,7 @@ public class GreetingController {
      * @param userName
      * @return
      */
-    @RequestMapping("/followme")
+    @RequestMapping("/twitter/followme")
     public String followme(@RequestParam(value="userName", defaultValue="World") String userName) {
     	
     	
@@ -128,7 +128,7 @@ public class GreetingController {
      * @param userName
      * @return
      */
-    @RequestMapping("/likeBytweetId")
+    @RequestMapping("/twitter/likeBytweetId")
     public String likeBytweetId(@RequestParam(value="tweetID", defaultValue="World") String tweetID) {
     	
     	int likeCount = TwitterUtility.likeTweet(Long.parseLong(tweetID));
@@ -141,7 +141,7 @@ public class GreetingController {
      * @param userName
      * @return
      */
-    @RequestMapping("/retweetBytweetId")
+    @RequestMapping("/twitter/retweetBytweetId")
     public String retweetBytweetId(@RequestParam(value="tweetID", defaultValue="World") String tweetID) {
     	
     	int retweetCount = TwitterUtility.retweet(Long.parseLong(tweetID));
@@ -155,7 +155,7 @@ public class GreetingController {
      * @param userName
      * @return
      */
-    @RequestMapping("/displayUsers")
+    @RequestMapping("/twitter/displayUsers")
     public String displayUsers() {
     	
     	CSVHelper.getUsers();
