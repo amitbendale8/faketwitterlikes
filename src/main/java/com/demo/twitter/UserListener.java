@@ -1,5 +1,8 @@
 package com.demo.twitter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +22,8 @@ import twitter4j.conf.ConfigurationBuilder;
 @Component
 @Scope("prototype")
 public class UserListener extends Thread{
-
+	
+	public Map<String,Integer> userMap = new HashMap<String, Integer>();
 	@Override
 	public void run() {
 
@@ -62,15 +66,17 @@ public class UserListener extends Thread{
                 User user = status.getUser();
                 
                 // gets Username
+                
                 String username = status.getUser().getScreenName();
                 System.out.println(username);
-                String profileLocation = user.getLocation();
-                System.out.println(profileLocation);
-                long tweetID = status.getId(); 
-                int likeCount = TwitterUtility.likeTweet(tweetID);
-                int retweetCount = TwitterUtility.retweet(tweetID);
-                System.out.println("Total Retweets: "+retweetCount);
-                System.out.println("Total likes: "+likeCount);
+  
+                if(userMap.containsKey(username)){
+	                long tweetID = status.getId(); 
+	                int likeCount = TwitterUtility.likeTweet(status);
+	                int retweetCount = TwitterUtility.retweet(status);
+	                System.out.println("Total Retweets: "+retweetCount);
+	                System.out.println("Total likes: "+likeCount);
+                }
 
             }
 
@@ -89,7 +95,7 @@ public class UserListener extends Thread{
         };
         FilterQuery fq = new FilterQuery();
     
-        
+        userMap.put("khurr_mundi", 5);
         //fq.follow(new long[] { 12354654});
         fq.follow(new long[] {1021626787});
         twitterStream.addListener(listener);

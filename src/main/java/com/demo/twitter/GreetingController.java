@@ -1,17 +1,15 @@
 package com.demo.twitter;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.entity.TwitterUser;
-import com.demo.utility.CSVHelper;
-import com.demo.utility.RandomnessUtility;
 import com.demo.utility.TwitterUtility;
 
 import twitter4j.ResponseList;
@@ -24,6 +22,7 @@ import twitter4j.auth.AccessToken;
 public class GreetingController {
 	
 	static Logger log = Logger.getLogger(GreetingController.class.getName());
+	
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
@@ -158,7 +157,7 @@ public class GreetingController {
     @RequestMapping("/twitter/displayUsers")
     public String displayUsers() {
     	
-    	CSVHelper.getUsers();
+    	log.debug("Debugging starts");
     	return "wait";   
     }
     

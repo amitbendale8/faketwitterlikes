@@ -160,8 +160,8 @@ public class TwitterUtility {
 		
 		List<TwitterUser> userList = TwitterUtility.getUserList();
       	Map<String,Twitter> userMap = TwitterUtility.getUserMap();
-    	int noOfLikes = RandomnessUtility.getRandomNum(18, userList.size());
-    	int[] randomUsrArray = RandomnessUtility.getRandomNumberArray(noOfLikes, 0, userList.size());
+    	int noOfRetweets = RandomnessUtility.getRandomNum(18, userList.size());
+    	int[] randomUsrArray = RandomnessUtility.getRandomNumberArray(noOfRetweets, 0, userList.size());
     	int retweetCount = 0;
     	for(int i=0;i<randomUsrArray.length;i++){
     	
@@ -169,6 +169,80 @@ public class TwitterUtility {
     		try{
         		Twitter twitter = userMap.get(user.getName());
         		Status status = twitter.showStatus(tweetID);
+        		int timeToPause = RandomnessUtility.getRandomNum(0, 10);
+        		Thread.sleep(timeToPause*1000);
+        		
+        		if(!status.isRetweeted()){
+    				twitter.retweetStatus(status.getId());
+    				retweetCount++;
+        		}
+        	}catch(Exception e){
+        		System.out.println("Exception occured for user "+user.getName());
+        	}
+    	}
+    	
+    	return retweetCount;
+	}
+	
+	
+	
+	/**
+	 * Likes tweet by tweet Id by all usr
+	 * @param tweetID
+	 * @return
+	 */
+	public static int likeTweet(Status status){
+		
+      	List<TwitterUser> userList = TwitterUtility.getUserList();
+      	Map<String,Twitter> userMap = TwitterUtility.getUserMap();
+    	int noOfLikes = 2;//RandomnessUtility.getRandomNum(18, userList.size());
+    	int[] randomUsrArray = RandomnessUtility.getRandomNumberArray(noOfLikes, 0, userList.size());
+    	
+    	int likeCount = 0;
+    	
+    	for(int i=0;i<randomUsrArray.length;i++){
+    	
+    		TwitterUser user = TwitterUtility.getUserList().get(randomUsrArray[i]);
+    		try{
+    			
+        		Twitter twitter = userMap.get(user.getName());
+        		int timeToPause = RandomnessUtility.getRandomNum(0, 10);
+        		Thread.sleep(timeToPause*1000);
+        		
+        		if(!status.isFavorited()){
+    				twitter.createFavorite(status.getId());
+    				likeCount++;
+        		}
+        		
+        		
+        	}catch(Exception e){
+        		System.out.println("Exception occured for user "+user.getName());
+        		System.out.println("Message "+e.getMessage());
+        	}
+    	}
+    	
+    	return likeCount;   
+	}
+	
+	
+	/**
+	 * Retweet by Status
+	 * @param tweetID
+	 * @return
+	 */
+	public static int retweet(Status status){
+		
+		List<TwitterUser> userList = TwitterUtility.getUserList();
+      	Map<String,Twitter> userMap = TwitterUtility.getUserMap();
+    	int noOfRetweets = 2;//RandomnessUtility.getRandomNum(18, userList.size());
+    	int[] randomUsrArray = RandomnessUtility.getRandomNumberArray(noOfRetweets, 0, userList.size());
+    	int retweetCount = 0;
+    	for(int i=0;i<randomUsrArray.length;i++){
+    	
+    		TwitterUser user = TwitterUtility.getUserList().get(randomUsrArray[i]);
+    		try{
+        		Twitter twitter = userMap.get(user.getName());
+        		
         		int timeToPause = RandomnessUtility.getRandomNum(0, 10);
         		Thread.sleep(timeToPause*1000);
         		
