@@ -1,7 +1,5 @@
 package com.demo.utility;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,17 +8,13 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.demo.entity.TwitterUser;
-import com.demo.google.GoogleAPIHelper;
-import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.ValueRange;
 
+import twitter4j.Query;
+import twitter4j.QueryResult;
 import twitter4j.Status;
 import twitter4j.Twitter;
-import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
-import twitter4j.auth.RequestToken;
-import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterUtility {
 	
@@ -256,5 +250,60 @@ public class TwitterUtility {
     	}
     	
     	return retweetCount;
+	}
+	
+	public static ArrayList<Status> getDiscussion(Status status, Twitter twitter) {
+	    ArrayList<Status> replies = new ArrayList<>();
+
+	    ArrayList<Status> all = null;
+
+	    try {
+	        long id = status.getId();
+	        String screenname = status.getUser().getScreenName();
+
+	        Query query = new Query("@" + screenname + " since_id:" + id);
+
+	        System.out.println("query string: " + query.getQuery());
+
+	        try {
+	            query.setCount(100);
+	        } catch (Throwable e) {
+	            // enlarge buffer error?
+	            query.setCount(30);
+	        }
+
+	        QueryResult result = twitter.search(query);
+	        System.out.println("result: " + result.getTweets().size());
+
+	        all = new ArrayList<Status>();
+
+	        do {
+	            System.out.println("do loop repetition");
+
+	            List<Status> tweets = result.getTweets();
+
+	            for (Status tweet : tweets)
+	                if (tweet.getInReplyToStatusId() == id)
+	                    all.add(tweet);
+
+	            if (all.size() > 0) {
+	                for (int i = all.size() - 1; i >= 0; i--)
+	                    replies.add(all.get(i));
+	                all.clear();
+	            }
+
+	            query = result.nextQuery();
+
+	            if (query != null)
+	                result = twitter.search(query);
+
+	        } while (query != null);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } catch (OutOfMemoryError e) {
+	        e.printStackTrace();
+	    }
+	    return replies;
 	}
 }

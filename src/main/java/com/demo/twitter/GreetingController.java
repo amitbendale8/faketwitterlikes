@@ -1,9 +1,11 @@
 package com.demo.twitter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.demo.entity.TwitterUser;
 import com.demo.utility.TwitterUtility;
 
+import twitter4j.HashtagEntity;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -159,6 +162,41 @@ public class GreetingController {
     	
     	log.debug("Debugging starts");
     	return "wait";   
+    }
+    
+    /**
+     * 
+     * @param userName
+     * @return
+     */
+    @RequestMapping("/twitter/getReplies")
+    public String getReplies(@RequestParam(value="userName", defaultValue="World") String userName) {
+    	
+    	Twitter bhakSala = TwitterUtility.getUserMap().get("bhak_kala");
+    	int noOfRetweet = 0;
+    	Map<String,ArrayList<String>> hashTagMap = new HashMap<String, ArrayList<String>>();
+    	try{
+    		ResponseList<Status> statusList= bhakSala.getUserTimeline(userName);
+    		Status status = statusList.get(0);
+    		ArrayList<Status> list = TwitterUtility.getDiscussion(status, bhakSala);
+    		for(int i=0;i<list.size();i++){
+    			Status replyStatus = list.get(i);
+    			HashtagEntity[] hashtagsEntities = replyStatus.getHashtagEntities();
+                for (HashtagEntity hashtag : hashtagsEntities){
+                    if(hashTagMap.containsKey(hashtag.getText())){
+                    	ArrayList<String> replyTweets = hashTagMap.get(hashtag.getText());
+                    	replyTweets.add(replyStatus.getText());
+                    }else{
+                    	ArrayList<String> newReplies = new ArrayList<String>();
+                    	newReplies.add(replyStatus.getText());
+                    }
+                }
+    		}
+    		
+    	}catch(Exception e){
+    		System.out.println("Error while getting tweet");
+    	}
+    	return "Total Retweets : "+noOfRetweet;   
     }
     
 }
